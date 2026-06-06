@@ -1,0 +1,68 @@
+import type { ArticleCardProps } from "@/components/medium/ArticleCard";
+
+export const ARTICLES: ArticleCardProps[] = [
+	{
+		id: 1,
+		title: "The Hidden Architecture of Large Language Models",
+		excerpt: "",
+		date: "Jun 5",
+		tag: "AI",
+		thumbnail: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=800&auto=format&fit=crop",
+	},
+	{
+		id: 2,
+		title: "Why Rust Is Eating Python's Lunch in Data Engineering",
+		excerpt: "",
+		date: "Jun 4",
+		tag: "Programming",
+		thumbnail: "https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=800&auto=format&fit=crop",
+	},
+	{
+		id: 3,
+		title: "Building a Sentiment Analysis Pipeline with IndoBERT: Lessons from 10k Labeled Comments",
+		excerpt: "Training multilingual models on social media data comes with unique challenges — class imbalance, slang, code-switching, and sarcasm. Here's what worked.",
+		date: "Jun 3",
+		tag: "Data Science",
+		thumbnail: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&auto=format&fit=crop",
+	},
+	{
+		id: 4,
+		title: "The Art of the Commit Message: How Small Habits Build Better Codebases",
+		excerpt: "Conventional commits, semantic versioning, and the discipline of writing for your future self. Small choices compound over months into something you'll actually be glad you did.",
+		date: "Jun 3",
+		tag: "Programming",
+		thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&auto=format&fit=crop",
+	},
+	{
+		id: 5,
+		title: "Stop Over-Engineering Your State Management",
+		excerpt: "Redux, Zustand, Jotai, Recoil, Context… when does the medicine become the disease? A pragmatic look at when you actually need a state manager.",
+		date: "Jun 2",
+		tag: "Programming",
+		thumbnail: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&auto=format&fit=crop",
+	},
+	{
+		id: 6,
+		title: "Why Your Next.js App Is Slow (And It's Not What You Think)",
+		excerpt: "After profiling dozens of production Next.js apps, the bottlenecks are almost never where teams expect. Waterfall fetches, unoptimized fonts, and layout shift are usually the culprit.",
+		date: "Jun 2",
+		tag: "Technology",
+		thumbnail: "https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?w=400&auto=format&fit=crop",
+	},
+	{
+		id: 7,
+		title: "The Chess Engine in Your Head: How Grandmasters Think 15 Moves Ahead",
+		excerpt: "Pattern recognition, not calculation, is the real secret. Understanding how experts encode and retrieve positions changes how you approach difficult problems — in chess and beyond.",
+		date: "May 31",
+		tag: "Science",
+		thumbnail: "https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=400&auto=format&fit=crop",
+	},
+	{
+		id: 8,
+		title: "Multi-Task Learning in NLP: One Model to Rule Them All?",
+		excerpt: "Sentiment, emotion, stance, sarcasm, toxicity — can a single fine-tuned BERT handle all of these at once? The tradeoffs are more nuanced than you'd expect.",
+		date: "May 30",
+		tag: "AI",
+		thumbnail: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=400&auto=format&fit=crop",
+	},
+];

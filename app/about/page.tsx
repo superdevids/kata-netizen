@@ -129,7 +129,7 @@ export default function AboutPage() {
 					<h2 className="text-2xl font-bold text-stone-900 dark:text-stone-100 mb-8">Perjalanan Kami</h2>
 					<div className="space-y-0">
 						{aboutMilestones.map((m, i) => (
-							<div key={m.year} className="flex gap-5">
+							<div key={`${m.year}-${i}`} className="flex gap-5">
 								<div className="flex flex-col items-center">
 									<div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 text-white flex items-center justify-center text-xs font-bold shrink-0">
 										{m.year}

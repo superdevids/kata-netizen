@@ -21,12 +21,10 @@ export function Sidebar({ header = true, trending = [] }: SidebarProps) {
 					<div className="space-y-5">
 						{trending.map((item, index) => (
 							<Link key={index} href={item.slug} className="group flex gap-4 cursor-pointer">
-								<span className="text-2xl font-bold text-stone-200 dark:text-stone-700 leading-none mt-0.5 group-hover:text-blue-300 dark:group-hover:text-blue-600 transition-colors select-none">{String(index + 1).padStart(2, "0")}</span>
+								<span className="text-2xl font-bold text-stone-200 dark:text-stone-700 leading-none mt-0.5 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors select-none">{String(index + 1).padStart(2, "0")}</span>
 								<div className="min-w-0">
 									<h4 className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-snug line-clamp-2 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{item.title}</h4>
 									<div className="flex items-center gap-1.5 mt-1 text-xs text-stone-400">
-										<span>Kata Netizen</span>
-										<span>·</span>
 										<span>{item.date}</span>
 									</div>
 								</div>

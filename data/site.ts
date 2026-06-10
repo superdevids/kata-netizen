@@ -17,9 +17,10 @@ export const site = {
 };
 
 export const navLinks = [
-	{ title: "Tentang Kami", href: "/about" },
+	{ title: "Tentang", href: "/about" },
 	{ title: "Blog", href: "/blog" },
 	{ title: "Bantuan", href: "/help" },
+	{ title: "Dukungan", href: "/support" },
 ];
 
 export const footerLinks = {
@@ -27,6 +28,7 @@ export const footerLinks = {
 		{ label: "Beranda", href: "/" },
 		{ label: "Tentang Kami", href: "/about" },
 		{ label: "Blog", href: "/blog" },
+		{ label: "Dukung Kami", href: "/support" },
 	],
 	bantuan: [
 		{ label: "Pusat Bantuan", href: "/help" },

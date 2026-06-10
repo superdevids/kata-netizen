@@ -231,6 +231,63 @@ export async function getIsuList(kategori?: string, search?: string, includeDraf
 	return result;
 }
 
+/** Get paginated list of isu for infinite scroll. Returns { data, nextCursor } */
+export interface PaginatedIsuResult {
+	data: IsuListItem[];
+	nextCursor: string | null;
+}
+
+export async function getIsuListPaginated(
+	kategori?: string,
+	search?: string,
+	limit = 10,
+	cursor?: string,
+	includeDrafts = false
+): Promise<PaginatedIsuResult> {
+	const where = {
+		...(includeDrafts ? {} : { is_draft: false, aktif: true, summary_isu: { some: {} } }),
+		...(kategori && kategori !== "Untuk Anda" ? { kategori } : {}),
+		...(search ? { judul: { contains: search } } : {}),
+	};
+
+	const data = await prisma.isu.findMany({
+		where,
+		orderBy: { created_at: "desc" },
+		take: limit + 1, // Fetch one extra to determine if there's a next page
+		cursor: cursor ? { id: cursor } : undefined,
+		skip: cursor ? 1 : 0,
+		select: {
+			id: true,
+			slug: true,
+			judul: true,
+			deskripsi: true,
+			thumbnail: true,
+			kategori: true,
+			created_at: true,
+		},
+	});
+
+	let nextCursor: string | null = null;
+	if (data.length > limit) {
+		const nextItem = data.pop();
+		nextCursor = nextItem!.id;
+	}
+
+	const result = {
+		data: data.map((i) => ({
+			slug: i.slug || i.id,
+			date: fmtDate(i.created_at),
+			title: i.judul,
+			description: i.deskripsi,
+			thumbnail: i.thumbnail,
+			kategori: i.kategori,
+		})),
+		nextCursor,
+	};
+
+	return result;
+}
+
 /** Get trending isu (for sidebar). Public: only published+active. */
 export async function getTrending(limit = 10, includeDrafts = false): Promise<TrendingItem[]> {
 	const cacheKey = CACHE_KEYS.TRENDING(limit);

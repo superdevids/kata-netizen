@@ -38,7 +38,7 @@ export function ArticleCard({ title, excerpt, date, tag, thumbnail, variant = "d
 						<h2 className="text-xl font-bold leading-snug mb-2 line-clamp-3">{title}</h2>
 						<div className="flex items-center gap-2 mb-3">
 							<Avatar className="h-6 w-6 border border-white/30">
-								<AvatarFallback className="text-[10px] bg-stone-600">KN</AvatarFallback>
+								<AvatarFallback className="text-[10px] bg-blue-600 dark:bg-blue-500 text-white">KN</AvatarFallback>
 							</Avatar>
 							<span className="text-sm text-white/80">Kata Netizen - {typeof date === "string" ? date : date.toLocaleDateString()}</span>
 						</div>

@@ -68,10 +68,7 @@ export const metadata: Metadata = {
 	verification: {
 		google: "GOOGLE_VERIFICATION_CODE",
 	},
-	icons: {
-		icon: [{ url: "/logo.png" }, { url: "/logo.png", sizes: "32x32", type: "image/png" }, { url: "/logo.png", sizes: "16x16", type: "image/png" }],
-		apple: "/logo.png",
-	},
+	// Icons are automatically detected from app/icon.png
 	// manifest: "/site.webmanifest",
 };
 

@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-type TxClient = Omit<PrismaClient, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">;
+type TxClient = Prisma.TransactionClient;
 
 /** Convert date string to Date object, pass through if already Date */
 const toDate = (v: unknown) => (v ? new Date(v as string) : null);

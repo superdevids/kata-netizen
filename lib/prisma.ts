@@ -6,7 +6,7 @@ const globalForPrisma = globalThis as {
 	prisma?: PrismaClient;
 };
 
-console.log("✓ Database: Connecting without SSL");
+console.log("✓ Database: Connecting");
 
 const adapter = new PrismaMariaDb({
 	host: process.env["DATABASE_HOST"],

@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `isu` (
     `id` VARCHAR(191) NOT NULL,
+    `slug` VARCHAR(191) NULL,
     `judul` VARCHAR(191) NOT NULL,
     `deskripsi` TEXT NOT NULL,
     `konten` TEXT NOT NULL,
@@ -8,9 +9,11 @@ CREATE TABLE `isu` (
     `kategori` VARCHAR(191) NOT NULL,
     `kata_kunci` TEXT NOT NULL,
     `aktif` BOOLEAN NOT NULL DEFAULT true,
+    `is_draft` BOOLEAN NOT NULL DEFAULT true,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
+    UNIQUE INDEX `isu_slug_key`(`slug`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -286,6 +289,20 @@ CREATE TABLE `visitor_logs` (
     `visited_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     INDEX `visitor_logs_visited_at_idx`(`visited_at`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `subscribers` (
+    `id` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `is_active` BOOLEAN NOT NULL DEFAULT true,
+    `subscribed_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `unsubscribed_at` DATETIME(3) NULL,
+
+    UNIQUE INDEX `subscribers_email_key`(`email`),
+    INDEX `subscribers_email_idx`(`email`),
+    INDEX `subscribers_is_active_idx`(`is_active`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

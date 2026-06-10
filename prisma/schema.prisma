@@ -10,6 +10,7 @@ datasource db {
 
 model Isu {
   id         String   @id @default(uuid())
+  slug       String?  @unique
   judul      String
   deskripsi  String   @db.Text
   konten     String   @db.Text
@@ -17,6 +18,7 @@ model Isu {
   kategori   String
   kata_kunci String   @db.Text
   aktif      Boolean  @default(true)
+  is_draft   Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @default(now()) @updatedAt
 
@@ -327,4 +329,16 @@ model VisitorLog {
 
   @@index([visited_at])
   @@map("visitor_logs")
+}
+
+model Subscriber {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  is_active       Boolean   @default(true)
+  subscribed_at   DateTime  @default(now())
+  unsubscribed_at DateTime?
+
+  @@index([email])
+  @@index([is_active])
+  @@map("subscribers")
 }

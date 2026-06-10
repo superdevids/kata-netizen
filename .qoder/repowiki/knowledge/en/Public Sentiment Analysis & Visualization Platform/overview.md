@@ -1,0 +1,1 @@
+A Next.js application that visualizes public sentiment, narrative trends, and social media analytics for Indonesian public opinion.

@@ -1,0 +1,3 @@
+- Server Components are the default for page entries (`app/page.tsx`, `app/[slug]/page.tsx`), with 'use client' directive explicitly added only to interactive components like `Navbar`.
+- Domain-specific data transformations (e.g., date formatting, slug generation) are centralized in `lib/query.ts` rather than performed inline in UI components.
+- Complex article content is rendered using a hybrid approach: static text from the database is split by delimiters ('|||') and interleaved with dynamic data visualization components from `data/article.ts`.

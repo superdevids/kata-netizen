@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider, THEME_SCRIPT } from "@/components/theme-provider";
+import { Suspense } from "react";
+import VisitorTracker from "@/components/visitor-tracker";
 
 const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -79,11 +82,18 @@ export default function RootLayout({
 }>) {
 	return (
 		<html
-			lang="en"
+			lang="id"
+			suppressHydrationWarning
 			className={cn("h-full", "antialiased", plusJakartaSans.variable)}
 		>
-			<body className="min-h-full flex flex-col">
-				<TooltipProvider>{children}</TooltipProvider>
+			<head dangerouslySetInnerHTML={{ __html: `<script>${THEME_SCRIPT}</script>` }} suppressHydrationWarning />
+			<body className="min-h-full flex flex-col bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 transition-colors">
+				<ThemeProvider>
+					<Suspense>
+						<VisitorTracker />
+					</Suspense>
+					<TooltipProvider>{children}</TooltipProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);

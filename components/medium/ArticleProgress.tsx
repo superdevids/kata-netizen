@@ -23,7 +23,7 @@ export function ArticleProgress() {
 	return (
 		<div className="fixed top-0 left-0 right-0 z-60 h-0.5 bg-stone-100">
 			<div
-				className="h-full bg-stone-800 transition-all duration-75 ease-out"
+				className="h-full bg-blue-400 transition-all duration-75 ease-out"
 				style={{ width: `${progress}%` }}
 			/>
 		</div>

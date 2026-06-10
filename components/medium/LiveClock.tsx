@@ -20,7 +20,7 @@ export function LiveClock() {
 	}, []);
 
 	return (
-		<div className="hidden sm:flex items-center gap-1.5 rounded-full border border-stone-300 px-3 h-8 text-sm text-stone-700 hover:bg-stone-50 transition-colors">
+		<div className="hidden sm:flex items-center gap-1.5 rounded-full border border-stone-200 dark:border-stone-700 px-3 h-8 text-sm text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors">
 			<Clock className="h-3.5 w-3.5" />
 			<span className="tabular-nums">{time} WIB</span>
 		</div>

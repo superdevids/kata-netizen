@@ -1,0 +1,197 @@
+{
+	"info": {
+		"name": "KataNetizen API",
+		"description": "API collection untuk KataNetizen — Public Sentiment Analysis & Visualization Platform.\n\n## Arsitektur Data\n\n**Tabel SUMBER (diisi manual dari IndoBERT):**\nIsu, Postingan, Komentar, Analisis, Entitas, Narasi, KeywordHarian, SummaryIsu\n\n**Tabel DERIVATIF (dihitung OTOMATIS setiap POST/PUT/DELETE Postingan):**\nTrenHarian, ReaksiPlatform, Eskalasi, MomentumShift, EchoChamber, IndeksKepercayaan, EntitasAgregat\n\n**PerbandinganIsu:**\nkorelasi_sentimen & korelasi_stance dihitung otomatis dari TrenHarian (Pearson correlation, minimal 2 hari overlap).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base", "value": "http://localhost:3000/api" },
+		{ "key": "api_key", "value": "katanetizen2026" }
+	],
+	"item": [
+		{
+			"name": "Upload",
+			"item": [
+				{
+					"name": "POST Upload Image",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{ "key": "file", "type": "file", "src": "/path/to/thumbnail.webp", "description": "Image file (jpeg, png, webp, gif, svg). Max recommended 5MB." },
+								{ "key": "folder", "value": "isu", "description": "Target subfolder under public/ (default: isu)" }
+							]
+						},
+						"url": { "raw": "{{base}}/upload", "host": ["{{base}}"], "path": ["upload"] },
+						"description": "Upload gambar ke folder public/. Response berisi `url` yang bisa langsung dipakai sebagai `thumbnail` di POST /api/isu.\n\nResponse:\n```json\n{ \"success\": true, \"url\": \"/isu/nama-file.webp\", \"filename\": \"nama-file.webp\", \"size\": 106348, \"type\": \"image/webp\" }\n```"
+					}
+				}
+			]
+		},
+		{
+			"name": "Isu",
+			"description": "CRUD Isu. Child tables yang bisa dikirim di body:\n- **narasi** (manual dari IndoBERT Topic)\n- **keyword_harian** (manual dari IndoBERT Topic)\n- **summary_isu** (manual)\n\nChild tables yang **JANGAN** dikirim (dihitung otomatis):\ntren_harian, reaksi_platform, eskalasi, momentum_shift, echo_chamber, indeks_kepercayaan, entitas_agregat",
+			"item": [
+				{
+					"name": "GET List Isu",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/isu?kategori=Politik",
+							"host": ["{{base}}"],
+							"path": ["isu"],
+							"query": [
+								{ "key": "kategori", "value": "Politik", "description": "Filter by kategori (optional)" }
+							]
+						}
+					}
+				},
+				{
+					"name": "POST Create Isu",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-API-Key", "value": "{{api_key}}" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"slug\": \"contoh-isu-2026\",\n  \"judul\": \"Judul Isu\",\n  \"deskripsi\": \"Deskripsi singkat isu\",\n  \"konten\": \"Konten lengkap artikel...\",\n  \"thumbnail\": \"/isu/contoh-thumbnail.webp\",\n  \"kategori\": \"Politik\",\n  \"kata_kunci\": \"isu, politik, contoh\",\n  \"aktif\": true,\n  \"narasi\": [\n    {\n      \"tanggal\": \"2026-06-10\",\n      \"narasi_ke\": 1,\n      \"kata_kunci\": { \"judul\": \"Narasi Utama\", \"deskripsi\": \"Penjelasan narasi...\" },\n      \"jumlah_komentar\": 400,\n      \"persentase\": 33.33,\n      \"contoh_komentar\": [{ \"username\": \"user1\", \"teks\": \"Contoh komentar narasi\" }]\n    }\n  ],\n  \"keyword_harian\": [\n    {\n      \"tanggal\": \"2026-06-10\",\n      \"sentimen\": \"positif\",\n      \"kata\": \"dukung\",\n      \"frekuensi\": 85,\n      \"skor_tfidf\": 0.045000\n    }\n  ],\n  \"summary_isu\": [\n    {\n      \"tanggal\": \"2026-06-10\",\n      \"periode\": \"minggu-1\",\n      \"judul\": \"Ringkasan Minggu Pertama\",\n      \"konten\": \"Isi ringkasan...\",\n      \"editor\": \"admin\"\n    }\n  ]\n}"
+						},
+						"url": { "raw": "{{base}}/isu", "host": ["{{base}}"], "path": ["isu"] },
+						"description": "Buat Isu baru.\n\n**Required:** judul, deskripsi, konten, thumbnail, kategori, kata_kunci\n\n**Optional child arrays (manual dari IndoBERT):** narasi, keyword_harian, summary_isu\n\n**JANGAN kirim:** tren_harian, reaksi_platform, eskalasi, momentum_shift, echo_chamber, indeks_kepercayaan, entitas_agregat (semua dihitung otomatis saat Postingan ditambahkan)\n\n**Auto:** Isu baru otomatis dipasangkan dengan semua Isu yang sudah ada di PerbandinganIsu."
+					}
+				},
+				{
+					"name": "GET Isu Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{base}}/isu/contoh-isu-2026", "host": ["{{base}}"], "path": ["isu", "contoh-isu-2026"] },
+						"description": "Detail Isu by slug atau ID. Response mencakup semua child tables (tren_harian, reaksi_platform, eskalasi, dll — termasuk yang auto-calculated)."
+					}
+				},
+				{
+					"name": "PUT Update Isu",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-API-Key", "value": "{{api_key}}" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"judul\": \"Judul Diperbarui\",\n  \"aktif\": false,\n  \"keyword_harian\": [\n    {\n      \"tanggal\": \"2026-06-11\",\n      \"sentimen\": \"negatif\",\n      \"kata\": \"korupsi\",\n      \"frekuensi\": 120,\n      \"skor_tfidf\": 0.060000\n    }\n  ]\n}"
+						},
+						"url": { "raw": "{{base}}/isu/contoh-isu-2026", "host": ["{{base}}"], "path": ["isu", "contoh-isu-2026"] },
+						"description": "Update Isu. Hanya field yang dikirim yang diupdate.\n\n**Child array (narasi, keyword_harian, summary_isu):** jika dikirim akan REPLACE semua data lama. Jika tidak dikirim = tidak berubah.\n\n**JANGAN kirim** derived tables (tren_harian, dll) — dihitung otomatis."
+					}
+				},
+				{
+					"name": "DELETE Isu",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+						"url": { "raw": "{{base}}/isu/contoh-isu-2026", "host": ["{{base}}"], "path": ["isu", "contoh-isu-2026"] },
+						"description": "Hapus Isu. Cascade: semua Postingan, Komentar, Analisis, Entitas, dan seluruh derived tables juga terhapus."
+					}
+				}
+			]
+		},
+		{
+			"name": "Postingan",
+			"description": "CRUD Postingan + Komentar + Analisis + Entitas.\n\n**PENTING:** Setiap POST/PUT/DELETE Postingan akan **trigger auto-recalculate** untuk:\n- TrenHarian\n- ReaksiPlatform\n- Eskalasi\n- MomentumShift\n- EchoChamber\n- IndeksKepercayaan\n- EntitasAgregat\n- PerbandinganIsu (korelasi untuk semua pair yang melibatkan Isu terkait)",
+			"item": [
+				{
+					"name": "GET List Postingan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/postingan?isu_id=UUID&platform=twitter&limit=50",
+							"host": ["{{base}}"],
+							"path": ["postingan"],
+							"query": [
+								{ "key": "isu_id", "value": "UUID", "description": "Filter by isu ID (optional)" },
+								{ "key": "platform", "value": "twitter", "description": "Filter by platform (optional)" },
+								{ "key": "limit", "value": "50", "description": "Max results (default 50, max 200)" }
+							]
+						}
+					}
+				},
+				{
+					"name": "POST Create Postingan",
+					"request": {
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-API-Key", "value": "{{api_key}}" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"isu_id\": \"UUID-ISU-ATAU-SLUG\",\n  \"platform\": \"twitter\",\n  \"judul\": \"Judul Postingan\",\n  \"url\": \"https://twitter.com/user/status/123\",\n  \"tanggal_post\": \"2026-06-10\",\n  \"komentar\": [\n    {\n      \"username\": \"user1\",\n      \"teks\": \"Teks komentar dari user\",\n      \"tanggal\": \"2026-06-10\",\n      \"analisis\": {\n        \"sentimen\": \"positif\",\n        \"emosi\": \"senang\",\n        \"stance\": \"mendukung\",\n        \"intensitas\": \"tinggi\",\n        \"is_sarkasme\": false,\n        \"is_toxic\": false,\n        \"conf_sentimen\": 0.9200,\n        \"conf_emosi\": 0.8800,\n        \"conf_stance\": 0.8500,\n        \"conf_intensitas\": 0.7900\n      },\n      \"entitas\": [\n        { \"tipe\": \"PERSON\", \"nilai\": \"Jokowi\" },\n        { \"tipe\": \"ORGANIZATION\", \"nilai\": \"DPR\" }\n      ]\n    },\n    {\n      \"username\": \"user2\",\n      \"teks\": \"Komentar kedua tanpa analisis\",\n      \"tanggal\": \"2026-06-10\"\n    }\n  ]\n}"
+						},
+						"url": { "raw": "{{base}}/postingan", "host": ["{{base}}"], "path": ["postingan"] },
+						"description": "Buat Postingan baru + Komentar + Analisis + Entitas.\n\n**Required:** isu_id (bisa UUID atau slug), platform\n\n**Setelah create:** semua derived tables otomatis dihitung ulang untuk Isu terkait.\n\n**analisis** (opsional per komentar): sentimen, emosi, stance, intensitas, is_sarkasme, is_toxic, conf_*\n\n**entitas** (opsional per komentar): array of {tipe, nilai}"
+					}
+				},
+				{
+					"name": "GET Postingan Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{base}}/postingan/UUID", "host": ["{{base}}"], "path": ["postingan", "UUID"] }
+					}
+				},
+				{
+					"name": "PUT Update Postingan",
+					"request": {
+						"method": "PUT",
+						"header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "X-API-Key", "value": "{{api_key}}" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"platform\": \"instagram\",\n  \"judul\": \"Judul Diperbarui\",\n  \"komentar\": [\n    {\n      \"username\": \"user_baru\",\n      \"teks\": \"Komentar baru (mengganti semua komentar lama)\",\n      \"tanggal\": \"2026-06-11\",\n      \"analisis\": {\n        \"sentimen\": \"negatif\",\n        \"emosi\": \"marah\",\n        \"stance\": \"menolak\",\n        \"intensitas\": \"tinggi\",\n        \"is_sarkasme\": true,\n        \"is_toxic\": false,\n        \"conf_sentimen\": 0.8800,\n        \"conf_emosi\": 0.8200,\n        \"conf_stance\": 0.7900,\n        \"conf_intensitas\": 0.7500\n      },\n      \"entitas\": [\n        { \"tipe\": \"PERSON\", \"nilai\": \"Prabowo\" }\n      ]\n    }\n  ]\n}"
+						},
+						"url": { "raw": "{{base}}/postingan/UUID", "host": ["{{base}}"], "path": ["postingan", "UUID"] },
+						"description": "Update Postingan. Hanya field yang dikirim yang diupdate.\n\n**komentar:** jika dikirim → semua komentar lama di-REPLACE. Jika tidak dikirim → komentar lama tetap.\n\n**Setelah update:** semua derived tables otomatis dihitung ulang."
+					}
+				},
+				{
+					"name": "DELETE Postingan",
+					"request": {
+						"method": "DELETE",
+						"header": [{ "key": "X-API-Key", "value": "{{api_key}}" }],
+						"url": { "raw": "{{base}}/postingan/UUID", "host": ["{{base}}"], "path": ["postingan", "UUID"] },
+						"description": "Hapus Postingan + semua Komentar, Analisis, Entitas. Cascade delete.\n\n**Setelah delete:** semua derived tables otomatis dihitung ulang untuk Isu terkait."
+					}
+				}
+			]
+		},
+		{
+			"name": "Perbandingan Isu",
+			"description": "Perbandingan Isu — **fully automatic (read-only)**.\n\n**Pair creation:** otomatis saat POST /api/isu (Isu baru dipasangkan dengan semua Isu yang sudah ada).\n\n**korelasi_sentimen & korelasi_stance:** dihitung otomatis dari TrenHarian (Pearson correlation, minimal 2 hari overlap).\n\n**Cascade delete:** saat Isu dihapus, semua pair terkait juga terhapus.\n\nEndpoint ini hanya untuk READ (GET list & GET detail).",
+			"item": [
+				{
+					"name": "GET List Perbandingan",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base}}/perbandingan-isu?isu_id=UUID&limit=50",
+							"host": ["{{base}}"],
+							"path": ["perbandingan-isu"],
+							"query": [
+								{ "key": "isu_id", "value": "UUID", "description": "Filter by isu ID (optional, matches isu_a or isu_b)" },
+								{ "key": "limit", "value": "50", "description": "Max results (default 50, max 200)" }
+							]
+						},
+						"description": "List semua pair perbandingan Isu beserta korelasi_sentimen & korelasi_stance yang sudah dihitung otomatis."
+					}
+				},
+				{
+					"name": "GET Perbandingan Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": { "raw": "{{base}}/perbandingan-isu/UUID", "host": ["{{base}}"], "path": ["perbandingan-isu", "UUID"] },
+						"description": "Detail pair perbandingan by ID."
+					}
+				}
+			]
+		}
+	]
+}

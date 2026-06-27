@@ -1,161 +1,137 @@
-# Contributing to Kata Netizen
+Selamat pagi teman teman 👋
 
-selamat siang teman-teman 👋
+saya mau membagikan project open source yang saya buat untuk belajar dan eksplorasi Next.js serta arsitektur zero-database untuk website analisis sentimen publik.
 
-izin share project open source yang saya buat untuk belajar dan eksplorasi integrasi analisis sentimen publik dengan website modern menggunakan Next.js dan Markdown-based content management.
+Kata Netizen adalah platform **Analisis Opini Publik Indonesia** yang mengumpulkan dan menyajikan data sentimen masyarakat dari berbagai platform media sosial. Yang bikin beda, project ini **tidak menggunakan database** — semua konten dikelola melalui file Markdown biasa.
 
-project ini adalah platform **Analisis Opini Publik Indonesia** bernama **Kata Netizen** yang mengumpulkan, memproses, dan menyajikan sentimen masyarakat dari berbagai platform media sosial — tanpa database, semua konten dikelola melalui file Markdown.
+awalnya project ini pake MySQL + Prisma, tapi karena ribet urus database dan hosting, saya putuskan untuk migrasi total ke Markdown files. hasilnya ternyata lebih simpel, lebih cepat, dan lebih mudah di-maintain.
 
 fitur yang saat ini sudah ada:
 
-- **Artikel Analisis Sentimen** — setiap artikel berisi analisis lengkap dengan visualisasi data interaktif
-- **Zero Database Architecture** — semua artikel dari file `.md`, data transien di JSON file, tidak perlu MySQL/PostgreSQL
-- **Static Site Generation** — halaman di-pre-build untuk performa maksimal
-- **13 Chart Components** — MiniBarChart, DonutChart, GaugeScore, StanceBar, EskalasiTimeline, dan lainnya
-- **Responsive Design** — mobile-first dengan dark mode
+- **Artikel Analisis Sentimen** — lengkap dengan 13 jenis chart/visualisasi data
+- **Zero Database Architecture** — semua artikel dari file `.md`, data runtime di JSON file
+- **Static Site Generation** — halaman di-pre-build, loading super cepat
+- **13 Chart Components** — MiniBarChart, DonutChart, GaugeScore, StanceBar, EskalasiTimeline, EchoChamberPanel, dan lainnya (semua SVG murni, tanpa library chart eksternal)
 - **Category Filtering** — filter artikel berdasarkan kategori (Ekonomi, Sosial, dll)
-- **Search Articles** — pencarian realtime dari navbar
-- **Infinite Scroll** — load lebih banyak artikel otomatis
-- **Table of Contents** — navigasi section artikel
-- **Trending Sidebar** — artikel terbaru di sidebar
-- **Newsletter Subscription** — langganan email dengan penyimpanan JSON
-- **Visitor Analytics** — log kunjungan per-hari ke JSON file (auto-trim)
-- **Dark Mode** — support light/dark theme
+- **Search Articles** — pencarian dari navbar
+- **Infinite Scroll** — load artikel otomatis pas scroll
+- **Dark Mode** — light/dark theme toggle
+- **Newsletter Subscription** — langganan email via JSON file
+- **Visitor Analytics** — log kunjungan per-hari ke JSON file
+- **Responsive Design** — mobile-first, desktop, tablet
 
 untuk stack & architecture yang digunakan:
 
-- **Next.js 16** — React framework (App Router)
+- **Next.js 16** — React Framework (App Router)
 - **React 19** — UI Library
-- **TypeScript** — type safety
-- **Tailwind CSS 4** — utility-first CSS
-- **shadcn/ui** — komponen UI (Radix UI)
-- **Recharts** — grafik & chart interaktif
-- **Resend** — email newsletter
+- **TypeScript** — biar gak error error amat
+- **Tailwind CSS 4** — styling cepet
+- **shadcn/ui** — komponen UI siap pakai
+- **Recharts** — grafik chart
 - **gray-matter** — parsing YAML frontmatter dari Markdown
-- **react-markdown** — rendering Markdown
+- **Resend** — kirim email newsletter
 
-secara arsitektur project ini menggunakan kombinasi:
+secara arsitektur project ini pake:
 
-- **Markdown-Driven Content** — semua artikel dari file `.md` dengan YAML frontmatter
-- **Server Components** — React Server Components untuk performa
-- **Static Site Generation** — halaman di-pre-build via `generateStaticParams`
-- **File-based Storage** — JSON file untuk data runtime (newsletter, visitor log)
-- **REST API** — endpoint untuk infinite scroll, newsletter, visitor log
-- **Client Components** — interaktivitas di sisi klien (infinite scroll, search, theme toggle)
+- **Markdown-Driven Content** — semua artikel dari file `.md` dengan YAML frontmatter untuk structured data
+- **React Server Components** — rendering di server, gak perlu JavaScript di klien
+- **Static Site Generation** — generateStaticParams buat pre-build halaman
+- **File-based Storage** — JSON file untuk data runtime (gak perlu MySQL/PostgreSQL)
 
 flow aplikasinya kurang lebih:
 
 ```
-User → Browser
+File .md di content/artikel/
   ↓
-Next.js (Server Components)
+Frontmatter (YAML) → metadata + data chart
+Body (Markdown) → 13 bagian artikel (dipisah <!--bagian-->)
   ↓
-content/artikel/*.md  ─→  Frontmatter (YAML)  ─→  ArticleBody + Charts
-  ↓                         Body (Markdown)     ─→  13 bagian artikel
-Static Site Generation
+Next.js SSG → pre-build halaman HTML
   ↓
-HTML + CSS + JS terkirim ke browser
+Browser → render artikel + chart interaktif
   ↓
-Client Components: infinite scroll, search, newsletter, visitor log, dark mode
+Client Components: infinite scroll, search, dark mode, visitor log
 ```
 
-```
-Struktur file artikel:
+project ini awalnya saya buat untuk belajar:
 
-content/artikel/
-├── analisis-pergerakan-rupiah.md   →  /analisis-pergerakan-rupiah
-├── kenaikan-bbm-dan-dampak-sosial.md  →  /kenaikan-bbm-dan-dampak-sosial
-└── judul-baru.md                    →  /judul-baru
-```
-
-Setiap file `.md` memiliki **YAML frontmatter** untuk metadata + data analysis, dan **body** dengan 13 bagian yang dipisah `<!--bagian-->`.
-
-salah satu tujuan project ini adalah belajar bagaimana membuat website analisis yang dinamis dan interaktif tanpa ketergantungan database — semua dikelola melalui file Markdown yang sederhana, mudah diedit, dan mudah di-version control.
-
-dari project ini saya banyak belajar tentang:
-
-- **Next.js App Router** — Server Components, SSR, SSG
-- **Static Site Generation** — generateStaticParams untuk halaman dinamis
+- **Next.js App Router** — Server Components vs Client Components
+- **Static Site Generation** — generateStaticParams, incremental static regeneration
 - **Markdown as Data Source** — YAML frontmatter untuk structured data
-- **Chart Visualization** — SVG-based chart components tanpa library eksternal
-- **File-based Storage** — JSON file untuk data runtime
-- **React Server Components vs Client Components** — kapan harus pake yang mana
-- **Infinite Scroll** — IntersectionObserver + offset-based pagination
-- **Dark Mode** — theme provider dengan Tailwind CSS
-- **Progressive Web App** — performa optimal dengan pre-rendering
+- **Chart Visualization** — bikin chart SVG manual tanpa library
+- **File-based Storage** — gantiin database pake JSON file
+- **Zero Database Architecture** — gimana caranya website jalan tanpa MySQL
+- **React Server Components** — kapan pake server, kapan pake client component
 
-masih banyak kekurangan dan fitur yang ingin saya tambahkan kedepannya seperti:
+masih banyak kekurangan dan beberapa bagian masih terus saya rapihkan 😅
+tapi semoga source code nya bisa jadi referensi atau bahan belajar buat teman teman yang sedang belajar Next.js, React, TypeScript, atau arsitektur web modern tanpa database
 
-- **RSS Feed** — untuk syndication konten
-- **Search Engine** — full-text search dengan Fuse.js atau Lunr
-- **Related Articles Algorithm** — rekomendasi artikel berdasarkan tag/kategori
-- **Reading Time Estimator** — perkiraan waktu baca yang lebih akurat
-- **Share to Social Media** — Open Graph meta tags yang lebih lengkap
-- **Sitemap Generator** — XML sitemap untuk SEO
-- **Image Optimization** — optimasi gambar artikel
-- **Multi-language Support** — dukungan multi bahasa
-- **Admin Dashboard** — UI untuk manage artikel tanpa edit file langsung
-- **Analytics Dashboard** — visualisasi visitor log
-- **Export to PDF** — export artikel ke PDF
+rencana kedepan:
+
+- **RSS Feed** — biar konten bisa diikuti via RSS reader
+- **Full-text Search** — pake Fuse.js biar search lebih akurat
+- **Sitemap Generator** — SEO biar makin gacor
+- **Related Articles** — rekomendasi artikel berdasarkan konten
+- **Export PDF** — export artikel ke PDF
+- **Admin UI** — biar bisa manage artikel tanpa buka file langsung
+- **Multi-language** — dukungan bahasa inggris
 
 feedback, issue, code review, ataupun contribution sangat dipersilahkan 🙌
 
-**github:**
+github:
 https://github.com/superdevids/kata-netizen
 
 ---
 
 ## Cara Berkontribusi
 
-### 1. Tambah Artikel Baru
+### 1. Tambah Artikel
 
-Cara termudah berkontribusi adalah dengan menambahkan artikel analisis sentimen:
-
-1. Buat file `.md` baru di `content/artikel/`
-2. Ikuti format frontmatter + 13 bagian `<!--bagian-->`
-3. Jalankan `npm run build` untuk verifikasi
-4. Buat Pull Request
-
-Lihat [README.md](README.md) untuk dokumentasi lengkap format file.
-
-### 2. Fix Bug atau Tambah Fitur
-
-1. Fork repository
-2. Buat branch baru: `git checkout -b feat/nama-fitur`
-3. Lakukan perubahan
-4. Pastikan `npm run build` sukses
-5. Buat Pull Request ke branch `main`
-
-### 3. Report Issue
-
-Buka [Issues](https://github.com/superdevids/kata-netizen/issues) untuk:
-- Laporan bug
-- Saran fitur
-- Pertanyaan
-
----
-
-## Development Setup
+Cara paling gampang berkontribusi adalah nambah artikel:
 
 ```bash
-# Clone repo
+# 1. Buat file .md di content/artikel/
+# 2. Isi frontmatter + body (13 bagian pake <!--bagian-->)
+# 3. Build & test
+npm run build
+# 4. Kirim Pull Request
+```
+
+Format lengkapnya ada di [README.md](README.md).
+
+### 2. Report Bug / Saran Fitur
+
+Buka [Issues](https://github.com/superdevids/kata-netizen/issues) buat:
+- Lapor bug
+- Saran fitur
+- Pertanyaan atau diskusi
+
+### 3. Pull Request
+
+1. Fork repo dulu
+2. `git checkout -b feat/nama-fitur`
+3. Coding sesuai kebutuhan
+4. Pastikan `npm run build` gak error
+5. Pull Request ke `main`
+
+### 4. Development Setup
+
+```bash
+# Clone
 git clone https://github.com/superdevids/kata-netizen.git
 cd kata-netizen
 
-# Install dependencies
+# Install
 npm install
 
-# Development server (port 3000)
+# Dev server (hot reload)
 npm run dev
 
-# Production build
+# Build production
 npm run build
-
-# Start production server
-npm start
 
 # Lint
 npm run lint
 ```
 
-**Catatan:** Project ini tidak membutuhkan database. Semua konten dari file `.md`. Cukup `npm install && npm run dev`.
+**Catatan:** Project ini gak butuh database sama sekali. Cuma butuh Node.js dan npm. Tinggal clone, npm install, npm run dev, jalan. 🚀

@@ -31,6 +31,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 				<div className="flex gap-12">
 					<div className="flex-1 min-w-0">
 						<InfiniteScrollArticles
+							key={`${aktifTab}-${search || ""}`}
 							initialData={isuResult.data}
 							initialNextCursor={isuResult.nextOffset !== null ? String(isuResult.nextOffset) : null}
 							kategori={aktifTab}

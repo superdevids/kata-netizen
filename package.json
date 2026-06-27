@@ -7,24 +7,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": ""
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
-    "@prisma/adapter-mariadb": "^7.8.0",
-    "@prisma/client": "^7.8.0",
     "@tailwindcss/typography": "^0.5.19",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.4.0",
-    "dotenv": "^17.4.2",
     "embla-carousel-react": "^8.6.0",
+    "gray-matter": "^4.0.3",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.17.0",
-    "mariadb": "^3.5.2",
     "next": "16.2.7",
-    "prisma": "^7.8.0",
     "radix-ui": "^1.4.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -44,7 +40,6 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.7",
-    "prisma": "^7.8.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

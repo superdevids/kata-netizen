@@ -1,7 +1,13 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { readAll, append, updateMany } from "@/lib/json-db";
 
-// POST /api/newsletter — subscribe to newsletter
+interface Subscriber {
+	email: string;
+	is_active: boolean;
+	subscribed_at: string;
+	unsubscribed_at: string | null;
+}
+
 export async function POST(request: NextRequest) {
 	try {
 		const body = await request.json();
@@ -11,34 +17,38 @@ export async function POST(request: NextRequest) {
 			return Response.json({ error: "Email is required" }, { status: 400 });
 		}
 
-		// Basic email validation
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
+		if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
 			return Response.json({ error: "Format email tidak valid" }, { status: 400 });
 		}
 
-		// Check if already subscribed
-		const existing = await prisma.subscriber.findUnique({ where: { email } });
+		const existing = readAll<Subscriber>("newsletter").find((s) => s.email === email);
+
 		if (existing) {
 			if (existing.is_active) {
 				return Response.json({ message: "Email ini sudah terdaftar sebagai subscriber." }, { status: 200 });
 			}
-			// Re-activate if previously unsubscribed
-			await prisma.subscriber.update({
-				where: { email },
-				data: { is_active: true, unsubscribed_at: null },
-			});
+			// Re-activate
+			updateMany<Subscriber>(
+				"newsletter",
+				(s) => s.email === email,
+				(s) => ({ ...s, is_active: true, unsubscribed_at: null }),
+			);
 			return Response.json({ success: true, message: "Selamat datang kembali! Anda telah berlangganan kembali." }, { status: 200 });
 		}
 
-		await prisma.subscriber.create({ data: { email } });
+		append<Subscriber>("newsletter", {
+			email,
+			is_active: true,
+			subscribed_at: new Date().toISOString(),
+			unsubscribed_at: null,
+		});
+
 		return Response.json({ success: true, message: "Berhasil berlangganan! Anda akan menerima notifikasi artikel terbaru." }, { status: 201 });
 	} catch (err: any) {
 		return Response.json({ error: err.message || "Internal server error" }, { status: 500 });
 	}
 }
 
-// GET /api/newsletter?email=...&action=unsubscribe — unsubscribe from newsletter
 export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
@@ -50,10 +60,14 @@ export async function GET(request: NextRequest) {
 		}
 
 		if (action === "unsubscribe") {
-			await prisma.subscriber.updateMany({
-				where: { email, is_active: true },
-				data: { is_active: false, unsubscribed_at: new Date() },
-			});
+			const count = updateMany<Subscriber>(
+				"newsletter",
+				(s) => s.email === email && s.is_active,
+				(s) => ({ ...s, is_active: false, unsubscribed_at: new Date().toISOString() }),
+			);
+			if (count === 0) {
+				return Response.json({ message: "Email tidak ditemukan atau sudah tidak aktif." });
+			}
 			return Response.json({ success: true, message: "Anda telah berhenti berlangganan." });
 		}
 

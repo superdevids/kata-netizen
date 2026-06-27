@@ -1,19 +1,19 @@
 import { Resend } from "resend";
-import { prisma } from "./prisma";
+import { readAll } from "./json-db";
+
+interface Subscriber {
+	email: string;
+	is_active: boolean;
+	subscribed_at: string;
+	unsubscribed_at: string | null;
+}
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-/**
- * Send newsletter notification when a new article (Isu) is published.
- * Uses Resend.com free tier (3,000 emails/month, 100/day).
- * Falls back to logging if RESEND_API_KEY is not configured.
- */
 export async function notifySubscribers(isu: { judul: string; slug?: string | null; deskripsi: string; kategori: string }) {
-	const subscribers = await prisma.subscriber.findMany({
-		where: { is_active: true },
-		select: { email: true },
-		take: 100, // Resend free tier: max 100 emails/day
-	});
+	const subscribers = readAll<Subscriber>("newsletter")
+		.filter((s) => s.is_active)
+		.slice(0, 100);
 
 	if (subscribers.length === 0) return;
 
@@ -39,13 +39,10 @@ export async function notifySubscribers(isu: { judul: string; slug?: string | nu
 		</div>
 	`;
 
-	if (!resend) {
-		return;
-	}
+	if (!resend) return;
 
 	const fromEmail = process.env.RESEND_FROM_EMAIL || "Kata Netizen <onboarding@resend.dev>";
 
-	// Send in batches to respect rate limits
 	for (const sub of subscribers) {
 		try {
 			const personalizedHtml = html.replace("{{EMAIL}}", encodeURIComponent(sub.email));
@@ -55,10 +52,8 @@ export async function notifySubscribers(isu: { judul: string; slug?: string | nu
 				subject: `Artikel Baru: ${isu.judul}`,
 				html: personalizedHtml,
 			});
-		} catch (err) {
-			// Silently handle send errors to avoid exposing sensitive info
+		} catch {
+			// Silently handle send errors
 		}
 	}
-
-	// Notifications sent successfully
 }

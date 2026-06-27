@@ -1,4 +1,6 @@
-export function MiniBarChart({ data }) {
+"use client";
+
+export function MiniBarChart({ data }: { data: any[] }) {
 	const maxVal = Math.max(...data.map((d) => d.total));
 	const w = 520,
 		h = 260,
@@ -9,7 +11,7 @@ export function MiniBarChart({ data }) {
 	const chartW = w - padL - padR;
 	const chartH = h - padT - padB;
 	const barCount = data.length;
-	const gap = Math.round(chartW / barCount * 0.35);
+	const gap = Math.round((chartW / barCount) * 0.35);
 	const barW = Math.round((chartW - gap * (barCount - 1)) / barCount);
 
 	// Y-axis: 4 evenly spaced grid lines
@@ -312,7 +314,7 @@ export function EmosiChart({ data }) {
 
 export function StanceBar({ data }) {
 	return (
-		<div className="not-prose my-8 space-y-3">
+		<div className="not-prose my-8 space-y-4">
 			<p className="text-xs font-semibold uppercase tracking-widest text-text-faint mb-3 font-sans">Stance publik per-platform — mendukung vs menolak kebijakan</p>
 			{data.map((row) => (
 				<div key={row.platform}>
@@ -526,7 +528,10 @@ export function IndeksTimeSeries({ data }) {
 		<div className="not-prose my-2">
 			<p className="text-xs font-semibold uppercase tracking-widest text-text-faint mb-4 font-sans">Indeks kepercayaan publik — {isMulti ? `tren ${data.length} titik waktu` : `data per ${first.tanggal}`}</p>
 			{/* Skor besar */}
-			<div className={`grid gap-3 mb-4`} style={{ gridTemplateColumns: `repeat(${Math.min(data.length, 5)}, minmax(0, 1fr))` }}>
+			<div
+				className={`grid gap-3 mb-4`}
+				style={{ gridTemplateColumns: `repeat(${Math.min(data.length, 5)}, minmax(0, 1fr))` }}
+			>
 				{data.map((d) => (
 					<div
 						key={d.tanggal}
@@ -628,3 +633,5 @@ export function SummaryMingguan({ data }) {
 		</div>
 	);
 }
+
+// MDX-SAFE: default empty arrays for all component props

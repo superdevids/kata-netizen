@@ -4,15 +4,15 @@ import { TopicTabs } from "@/components/medium/TopicTabs";
 import { Sidebar } from "@/components/medium/Sidebar";
 import { MobileTrending } from "@/components/medium/MobileTrending";
 import { InfiniteScrollArticles } from "@/components/medium/InfiniteScrollArticles";
-import { getIsuListPaginated, getKategori, getTrending } from "@/lib/query";
+import { getMdArticleListPaginated, getMdKategori, getMdTrending } from "@/lib/md-loader";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ kategori?: string; search?: string }> }) {
 	const { kategori, search } = await searchParams;
 	const aktifTab = kategori ?? "Untuk Anda";
 	const [isuResult, kategoriList, trending] = await Promise.all([
-		getIsuListPaginated(kategori, search, 10, undefined, false),
-		getKategori(),
-		getTrending(10)
+		getMdArticleListPaginated(kategori, search, 10, 0),
+		getMdKategori(),
+		getMdTrending(10)
 	]);
 
 	return (
@@ -32,7 +32,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 					<div className="flex-1 min-w-0">
 						<InfiniteScrollArticles
 							initialData={isuResult.data}
-							initialNextCursor={isuResult.nextCursor}
+							initialNextCursor={isuResult.nextOffset !== null ? String(isuResult.nextOffset) : null}
 							kategori={aktifTab}
 							search={search}
 						/>

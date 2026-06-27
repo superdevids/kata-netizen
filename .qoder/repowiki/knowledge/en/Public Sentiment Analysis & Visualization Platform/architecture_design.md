@@ -1,5 +1,0 @@
-- **Framework & Routing**: Built on Next.js 16 (App Router) with TypeScript, utilizing server-side data fetching in `app/page.tsx` and dynamic routes `app/[slug]/page.tsx` for article details.
-- **Data Layer**: Uses Prisma ORM with a custom MariaDB adapter (`lib/prisma.ts`) to query a MySQL-compatible database. Data access is abstracted through `lib/query.ts`.
-- **UI Architecture**: Follows a composite component pattern. `components/ui/` contains atomic Radix UI primitives managed by shadcn/ui, while `components/medium/` holds domain-specific composites like `ArticleBody` and `Navbar`.
-- **Styling**: Employs Tailwind CSS v4 with `@tailwindcss/typography` for prose rendering, organized into modular CSS files in `styles/`.
-- **State & Interactivity**: Client-side interactivity (e.g., scroll detection in `Navbar`, search toggles) is handled via React hooks within "use client" components.

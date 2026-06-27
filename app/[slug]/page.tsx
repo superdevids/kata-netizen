@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/medium/Navbar";
@@ -11,14 +13,35 @@ import { ShareButtons } from "@/components/medium/ShareButtons";
 import { BackToTop } from "@/components/medium/BackToTop";
 import { Footer } from "@/components/medium/Footer";
 import { MobileSidebar } from "@/components/medium/MobileSidebar";
-import { getIsuDetail, getRecommended, getTrending } from "@/lib/query";
-import { redirect } from "next/navigation";
 import { BookOpen, ChevronRight } from "lucide-react";
+import { getAllSlugs, getMdArticle, getAllArticles } from "@/lib/md-loader";
+
+// ═══ Static Generation ═══════════════════════════════════════════════════════
+
+export function generateStaticParams() {
+	return getAllSlugs().map((slug) => ({ slug }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+	const { slug } = await params;
+	const detail = getMdArticle(slug);
+	if (!detail) return { title: "Artikel Tidak Ditemukan" };
+	return {
+		title: detail.title,
+		description: detail.description,
+	};
+}
+
+// ═══ Page ════════════════════════════════════════════════════════════════════
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
 	const { slug } = await params;
-	const [detail, recommended, trending] = await Promise.all([getIsuDetail(slug), getRecommended(slug, 5), getTrending(10)]);
-	if (!detail) redirect("/");
+	const detail = getMdArticle(slug);
+	const allArticles = getAllArticles();
+	const recommended = allArticles.filter((a) => a.slug !== slug).slice(0, 5);
+	const trending = allArticles.slice(0, 10);
+
+	if (!detail) notFound();
 
 	return (
 		<div className="min-h-screen bg-white dark:bg-stone-900">
@@ -42,7 +65,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 				<div className="flex gap-6">
 					{/* Main Article Column */}
 					<div className="flex-1 min-w-0">
-						{/* Category + Reading Time */}
+						{/* Category */}
 						<div className="flex items-center gap-3 mb-5">
 							{detail.kategori && (
 								<Badge variant="secondary" className="rounded-full bg-blue-700 dark:bg-blue-600 text-white hover:bg-blue-800 dark:hover:bg-blue-700 text-xs font-medium px-3 h-6 cursor-pointer transition-colors">
@@ -70,7 +93,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 										<span className="text-stone-200 dark:text-stone-700">·</span>
 										<span className="flex items-center gap-1">
 											<BookOpen className="h-3 w-3" />
-											Analisis Sentimen
+											{detail.readTime ? `${detail.readTime} menit` : "Analisis Sentimen"}
 										</span>
 									</div>
 								</div>
@@ -95,13 +118,15 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 							</figure>
 						)}
 
-						{/* Article Content */}
-						<div className="mt-10">
-							<ArticleBody
-								detailIsu={{ judul: detail.title, konten: detail.konten, thumbnail: detail.thumbnail }}
-								analysis={detail.analysis}
-							/>
-						</div>
+						{/* Article Content — menggunakan ArticleBody ASLI */}
+						<ArticleBody
+							detailIsu={{
+								judul: detail.title,
+								konten: detail.konten,
+								thumbnail: detail.thumbnail,
+							}}
+							analysis={detail.analysis}
+						/>
 
 						{/* Tags */}
 						{detail.kata_kunci && (
@@ -127,10 +152,8 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 					{/* Sidebar Column (Desktop: lg+) */}
 					<div className="hidden lg:flex flex-col w-64 shrink-0">
 						<div className="sticky top-24 space-y-8 pl-8 border-stone-200 dark:border-stone-800">
-							{/* Table of Contents */}
 							<TableOfContents />
 
-							{/* Trending */}
 							{trending.length > 0 && (
 								<div className="border-t border-stone-100 dark:border-border-subtle pt-6">
 									<p className="text-xs font-semibold uppercase tracking-widest text-text-faint mb-4">Trending</p>
@@ -152,7 +175,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
 				</div>
 			</main>
 
-			{/* Mobile: TOC & Trending Buttons (Vertical Stack) */}
+			{/* Mobile: TOC & Trending Buttons */}
 			<div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3">
 				<MobileSidebar trending={trending} />
 				<BackToTop />

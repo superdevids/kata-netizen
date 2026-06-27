@@ -1,4 +1,0 @@
-- **Database Adapter**: `@prisma/adapter-mariadb` for connecting Prisma to MariaDB/MySQL.
-- **UI Library**: Radix UI primitives via `shadcn/ui` (style: `radix-nova`).
-- **Charting**: `recharts` for data visualization in `components/medium/Chart.tsx`.
-- **Styling Engine**: Tailwind CSS v4 with `tw-animate-css` and `tailwindcss-animate`.

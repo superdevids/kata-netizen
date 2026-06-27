@@ -155,6 +155,16 @@ export function DonutChart({ data, totalKomentar }) {
 	const circ = 2 * Math.PI * r;
 	const total = data.reduce((a, d) => a + d.pct, 0);
 	let offset = 0;
+
+	// Format "12.500" → "12.5K", "1.200" → "1.2K", "500" → "500"
+	const fmtTotal = (val: string): string => {
+		const num = parseFloat(val.replace(/\./g, ""));
+		if (isNaN(num)) return val;
+		if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1).replace(/\.0$/, "")}M`;
+		if (num >= 1_000) return `${(num / 1_000).toFixed(1).replace(/\.0$/, "")}K`;
+		return String(num);
+	};
+
 	return (
 		<svg
 			viewBox="0 0 192 192"
@@ -189,7 +199,7 @@ export function DonutChart({ data, totalKomentar }) {
 				fill="currentColor"
 				className="text-text-heading"
 			>
-				{totalKomentar}
+				{fmtTotal(totalKomentar)}
 			</text>
 			<text
 				x={cx}

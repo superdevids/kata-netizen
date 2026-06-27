@@ -48,25 +48,3 @@ feedback, issue, code review, contribution sangat dipersilahkan 🙌
 
 github:
 https://github.com/superdevids/kata-netizen
-
----
-
-## Cara Kontribusi
-
-**1. Tambah artikel:** Buat `.md` di `content/artikel/`, ikut format frontmatter + 13 bagian `<!--bagian-->`, `npm run build`, kirim PR.
-
-**2. Report bug / saran:** Buka [Issues](https://github.com/superdevids/kata-netizen/issues)
-
-**3. Pull Request:** Fork → `git checkout -b feat/nama-fitur` → coding → `npm run build` gak error → PR ke `main`
-
-**4. Setup:**
-
-```bash
-git clone https://github.com/superdevids/kata-netizen.git
-cd kata-netizen
-npm install
-npm run dev     # development
-npm run build   # production
-```
-
-Project ini gak butuh database. Cuma Node.js + npm. Clone, install, jalan. 🚀
